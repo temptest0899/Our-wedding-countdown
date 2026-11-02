@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7e7e9">
+  <meta name="description" content="A romantic countdown to 28 January 2027.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <title>Our Wedding Countdown</title>
+  <style>
+    :root { --pink:#f7e7e9; --rose:#b76e79; --deep:#78434e; --gold:#b58a55; --cream:#fffaf7; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100svh; display:grid; place-items:center; padding:18px;
+      color:var(--deep); font-family: Georgia, 'Times New Roman', serif;
+      background: radial-gradient(circle at 15% 15%, #fff8f5 0 10%, transparent 34%),
+                  linear-gradient(145deg,#f9ecec,#f1d9dc 55%,#f7eee6); }
+    .card { width:min(100%,440px); overflow:hidden; border:1px solid rgba(181,138,85,.42);
+      border-radius:28px; background:rgba(255,250,247,.91); box-shadow:0 18px 55px #78434e22; }
+    .hero { min-height:265px; position:relative; display:grid; place-items:center; overflow:hidden;
+      background:linear-gradient(135deg,#e8c4ca,#f7e8e5 48%,#d9b8aa); }
+    .hero img { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; display:none; }
+    .hero.has-photo img { display:block; }
+    .hero:after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,#4a253522,#4a253544); pointer-events:none; }
+    .photo-prompt { position:relative; z-index:1; text-align:center; padding:24px; color:#78434e; }
+    .hero.has-photo .photo-prompt { display:none; }
+    .photo-prompt .heart { font-size:44px; color:#fff8f5; text-shadow:0 2px 14px #78434e66; }
+    .photo-prompt p { margin:8px 0 0; font-size:14px; }
+    .content { text-align:center; padding:26px 22px 24px; }
+    .eyebrow { letter-spacing:.24em; text-transform:uppercase; font:600 10px/1.5 Arial,sans-serif; color:var(--gold); }
+    h1 { margin:9px 0 4px; font-size:clamp(32px,9vw,43px); font-weight:normal; }
+    .subtitle { margin:0 0 22px; font-size:15px; color:#9b6971; font-style:italic; }
+    .count { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .unit { border:1px solid #e5c9c7; border-radius:15px; padding:13px 4px 11px; background:#fff7f4; }
+    .num { display:block; font:600 clamp(23px,7vw,32px)/1.1 Arial,sans-serif; color:#a65f6d; font-variant-numeric:tabular-nums; }
+    .label { display:block; margin-top:7px; font:10px Arial,sans-serif; letter-spacing:.12em; color:#a47b70; text-transform:uppercase; }
+    .date { margin:20px 0 0; font:600 13px Arial,sans-serif; letter-spacing:.18em; color:var(--gold); }
+    .tagline { margin:14px 0 0; font-style:italic; font-size:15px; color:#9b6971; }
+    .actions { display:flex; gap:9px; justify-content:center; flex-wrap:wrap; padding:0 18px 22px; }
+    button { border:1px solid #c99a91; background:#fff7f4; color:#874f5a; padding:11px 15px; border-radius:999px; font:600 12px Arial,sans-serif; cursor:pointer; }
+    button.primary { background:#a96773; color:white; border-color:#a96773; }
+    #photoInput { display:none }
+    .foot { text-align:center; padding:0 18px 19px; color:#b28a7d; font:10px Arial,sans-serif; }
+    @media (max-width:350px) { .count{gap:5px}.unit{padding:11px 2px}.label{font-size:9px} }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section class="hero has-photo" id="hero">
+      <img id="couplePhoto" src="images/our-couple.jpg" alt="Our wedding photograph">
+      <div class="photo-prompt"><div class="heart">♡</div><strong>Your favourite moment goes here</strong><p>Add your engagement photograph below</p></div>
+    </section>
+    <section class="content">
+      <div class="eyebrow">A beautiful new beginning</div>
+      <h1>Our Wedding</h1>
+      <p class="subtitle">Two hearts · One forever</p>
+      <div class="count" aria-live="off">
+        <div class="unit"><span class="num" id="days">---</span><span class="label">Days</span></div>
+        <div class="unit"><span class="num" id="hours">--</span><span class="label">Hours</span></div>
+        <div class="unit"><span class="num" id="minutes">--</span><span class="label">Minutes</span></div>
+        <div class="unit"><span class="num" id="seconds">--</span><span class="label">Seconds</span></div>
+      </div>
+      <p class="date">28 · 01 · 2027</p>
+      <p class="tagline" id="message">Counting down to our forever ❤️</p>
+    </section>
+    <div class="actions">
+      <button class="primary" id="installBtn" hidden>Install countdown</button>
+      <button id="photoBtn">Add engagement photo</button>
+      <button id="removePhotoBtn" hidden>Remove photo</button>
+      <input id="photoInput" type="file" accept="image/*">
+    </div>
+    <div class="foot">Made with love · Your special day, always close</div>
+  </main>
+<script>
+  // The date is interpreted in the phone's local timezone.
+  const target = new Date(2027, 0, 28, 0, 0, 0).getTime();
+  const $ = id => document.getElementById(id);
+  function tick() {
+    let diff = target - Date.now();
+    if (diff <= 0) {
+      $('days').textContent = '0'; $('hours').textContent = '00';
+      $('minutes').textContent = '00'; $('seconds').textContent = '00';
+      $('message').textContent = 'Today is the day! ❤️'; return;
+    }
+    const d = Math.floor(diff / 86400000); diff %= 86400000;
+    const h = Math.floor(diff / 3600000); diff %= 3600000;
+    const m = Math.floor(diff / 60000); const s = Math.floor((diff % 60000) / 1000);
+    $('days').textContent = d; $('hours').textContent = String(h).padStart(2,'0');
+    $('minutes').textContent = String(m).padStart(2,'0'); $('seconds').textContent = String(s).padStart(2,'0');
+  }
+  tick(); setInterval(tick,1000);
+  const savedPhoto = localStorage.getItem('weddingPhoto');
+  function showPhoto(src) { $('couplePhoto').src=src; $('hero').classList.add('has-photo'); $('removePhotoBtn').hidden=false; }
+  if (savedPhoto) showPhoto(savedPhoto); else $('removePhotoBtn').hidden=false;
+  $('photoBtn').addEventListener('click',()=>$('photoInput').click());
+  $('photoInput').addEventListener('change', e => {
+    const file=e.target.files && e.target.files[0]; if(!file) return;
+    if(file.size > 5*1024*1024) { alert('Please choose a photo smaller than 5 MB.'); return; }
+    const reader=new FileReader(); reader.onload=()=>{ try { localStorage.setItem('weddingPhoto',reader.result); showPhoto(reader.result); } catch(err) { alert('This photo is too large for browser storage. Please choose a smaller image.'); } }; reader.readAsDataURL(file);
+  });
+  $('removePhotoBtn').addEventListener('click',()=>{localStorage.removeItem('weddingPhoto');$('couplePhoto').src='images/our-couple.jpg';$('hero').classList.add('has-photo');$('removePhotoBtn').hidden=false;});
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false;});
+  $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').hidden=true;});
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+</script>
+</body>
+</html>
