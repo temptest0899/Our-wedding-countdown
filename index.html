@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f7e7e9">
   <meta name="description" content="A romantic countdown to 28 January 2027.">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon-192.png">
+  <link rel="icon" href="icon-192.png">
   <title>Our Wedding Countdown</title>
   <style>
     :root { --pink:#f7e7e9; --rose:#b76e79; --deep:#78434e; --gold:#b58a55; --cream:#fffaf7; }
@@ -98,7 +98,7 @@
     if(file.size > 5*1024*1024) { alert('Please choose a photo smaller than 5 MB.'); return; }
     const reader=new FileReader(); reader.onload=()=>{ try { localStorage.setItem('weddingPhoto',reader.result); showPhoto(reader.result); } catch(err) { alert('This photo is too large for browser storage. Please choose a smaller image.'); } }; reader.readAsDataURL(file);
   });
-  $('removePhotoBtn').addEventListener('click',()=>{localStorage.removeItem('weddingPhoto');$('couplePhoto').src='images/our-couple.jpg';$('hero').classList.add('has-photo');$('removePhotoBtn').hidden=false;});
+  $('removePhotoBtn').addEventListener('click',()=>{localStorage.removeItem('weddingPhoto');$('couplePhoto').src='our-couple.jpg';$('hero').classList.add('has-photo');$('removePhotoBtn').hidden=false;});
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false;});
   $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').hidden=true;});
